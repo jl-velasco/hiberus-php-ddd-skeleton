@@ -1,0 +1,106 @@
+{
+    "name": "hiberus/ddd-skeleton",
+    "description": "Skeleton DDD",
+    "authors": [
+        {
+            "name": "Hiberus"
+        }
+    ],
+    "type": "project",
+    "license": "proprietary",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.1",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "ext-json": "*",
+        "ext-sockets": "*",
+        "doctrine/doctrine-migrations-bundle": "^3.2",
+        "lambdish/phunctional": "^2.1",
+        "php-amqplib/php-amqplib": "^3.2",
+        "ramsey/uuid": "^4.2",
+        "symfony/console": "6.0.*",
+        "symfony/dotenv": "6.0.*",
+        "symfony/flex": "^1.3.1",
+        "symfony/framework-bundle": "6.0.*",
+        "symfony/messenger": "6.0.*",
+        "symfony/runtime": "6.0.*",
+        "symfony/twig-bundle": "6.0.*",
+        "symfony/validator": "6.0.*",
+        "symfony/yaml": "6.0.*"
+    },
+    "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
+        "fakerphp/faker": "^1.17",
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan": "^1.1",
+        "phpstan/phpstan-symfony": "^1.0",
+        "phpunit/phpunit": "^9.5",
+        "symfony/browser-kit": "6.0.*",
+        "symfony/phpunit-bridge": "^6.0",
+        "symfony/stopwatch": "6.0.*",
+        "symfony/var-dumper": "6.0.*",
+        "symplify/easy-coding-standard": "^9.4"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Hiberus\\Skeleton\\": "src/",
+            "Hiberus\\Skeleton\\App\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Hiberus\\Skeleton\\Tests\\": "tests/"
+        }
+    },
+    "replace": {
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-php72": "*"
+    },
+    "scripts": {
+        "auto-scripts": {
+            "cache:clear": "symfony-cmd",
+            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+        },
+        "post-install-cmd": [
+        ],
+        "post-update-cmd": [
+            "@auto-scripts"
+        ],
+        "cs": [
+            "vendor/bin/ecs check --ansi --no-interaction"
+        ],
+        "cs-fix": [
+             "vendor/bin/ecs check --fix --ansi --no-interaction"
+        ],
+        "stan": [
+            "vendor/bin/phpstan analyse --ansi --no-interaction"
+        ],
+        "csstan": [
+            "vendor/bin/ecs check --fix --ansi --no-interaction -vvv",
+            "vendor/bin/phpstan analyse --ansi --no-interaction"
+        ]
+    },
+    "conflict": {
+        "symfony/symfony": "*"
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false,
+            "require": "6.0.*"
+        },
+        "runtime": {
+            "dotenv_path": "config/environments/.env"
+        }
+    },
+    "repositories": []
+}

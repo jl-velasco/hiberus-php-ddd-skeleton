@@ -1,0 +1,8 @@
+doctrine_migrations:
+    migrations_paths:
+        # namespace is arbitrary but should be different from App\Migrations
+        # as migrations classes should NOT be autoloaded
+        # as migrations classes should NOT be autoloaded
+        'Hiberus\Skeleton\App\Migration': '%kernel.project_dir%/app/Migration'
+    enable_profiler: '%kernel.debug%'
+

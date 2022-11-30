@@ -1,0 +1,4 @@
+health-check_get:
+  path: /health-check
+  controller: Hiberus\Skeleton\App\Controller\HealthCheck\HealthCheckGetController
+  methods:  [GET]

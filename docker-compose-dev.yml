@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  skeleton:
+    container_name: hiberus_skeleton
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-dev
+    volumes:
+      - ./:/var/www
+      - ./var/log:/var/log
+      - ${GIT_SSH_CREDENTIALS_PATH}:/root/.ssh:ro
+    ports:
+      - "8001:80"
+
+  skeleton_db:
+    container_name: hiberus_skeleton_db
+    image: mariadb:10.7.4
+    restart: always
+    environment:
+      - MYSQL_DATABASE=skeleton
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - skeleton_data_base_local:/var/lib/mysql
+    ports:
+      - "3360:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "--user=root", "--password=", "--host=127.0.0.1", "ping", "--silent" ]
+      interval: 2s
+      timeout: 10s
+      retries: 10
+    command: [ "--default-authentication-plugin=mysql_native_password" ]
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: hiberus_rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_VHOST: /hiberus
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - skeleton_queue_system_local:/var/lib/rabbitmq/
+    ports:
+      - "5672:5672"
+      - "5673:5673"
+      - "15672:15672"
+
+volumes:
+  skeleton_data_base_local:
+  skeleton_queue_system_local:

@@ -1,0 +1,48 @@
+FROM php:8.0-apache
+
+# PHP
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libssl-dev zlib1g-dev curl git unzip netcat libxml2-dev libpq-dev libzip-dev && \
+    pecl install apcu xdebug-3.1.1 redis-5.3.4 && \
+    docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql && \
+    docker-php-ext-install -j$(nproc) zip opcache intl pdo_pgsql pgsql sockets && \
+    docker-php-ext-enable apcu pdo_pgsql sodium && \
+    docker-php-ext-enable redis && \
+    docker-php-ext-enable xdebug && \
+    echo "xdebug.mode=develop,debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Apache
+COPY ./docker/vhost.conf /etc/apache2/sites-available
+RUN a2enmod rewrite && \
+    a2dissite 000-default && \
+    a2ensite vhost
+
+# Install symfony
+RUN curl -sS https://get.symfony.com/cli/installer | bash \
+    && mv ~/.symfony/bin/symfony /usr/local/bin/symfony
+
+# Copy code to container
+COPY . /var/www
+
+# Make project /var folder writable
+RUN mkdir -p /var/www/var
+RUN chmod 777 -R /var/www/var/
+
+# Setup environments variable
+RUN rm -f /var/www/config/environments/.env \
+    && cp /var/www/config/environments/.env.test.integration /var/www/config/environments/.env
+
+WORKDIR /var/www
+
+# Install dependencies
+RUN php composer.phar install
+
+# Database setup
+#ENTRYPOINT ./docker/wait-for-it.sh service_with_the_database:5432 -- php bin/console doctrine:migrations:migrate -n -v \
+#    && php bin/console doctrine:fixture:load -n \
+#    && apache2-foreground
+# Previous lines or this:
+ENTRYPOINT apache2-foreground
+

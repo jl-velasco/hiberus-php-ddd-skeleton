@@ -1,0 +1,8 @@
+parameters:
+    level: 7
+    paths:
+        - src
+        - app
+        - tests
+    symfony:
+        container_xml_path: 'var/cache/dev/Hiberus_Skeleton_App_KernelDevDebugContainer.xml'

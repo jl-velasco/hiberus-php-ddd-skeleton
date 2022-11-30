@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  service_name_test:
+    container_name: skeleton_test
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-test
+    image: Hiberus/skeleton:test
+    ports:
+      - "8101:80"
+
+networks:
+  default:
+    name: skeleton_test_network

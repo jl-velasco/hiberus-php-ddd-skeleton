@@ -1,0 +1,9 @@
+v1_controllers:
+  resource: routes/v1/routes.yaml
+  prefix: '/v1'
+
+home_get:
+  path: /
+  controller: Hiberus\Skeleton\App\Controller\Home\HomeGetWebController
+  defaults: { auth: false }
+  methods:  [GET]

@@ -1,0 +1,84 @@
+parameters:
+    defaultPrefetchCount: 0
+    defaultMaxMessages: 0
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # Configure
+    _instanceof:
+        Hiberus\Skeleton\Shared\Domain\Bus\Event\DomainEventSubscriber:
+            tags: [ 'hiberus.skeleton.domain_event_subscriber' ]
+
+        Hiberus\Skeleton\Shared\Domain\Bus\Command\CommandHandler:
+            tags: [ 'hiberus.skeleton.command_handler' ]
+
+        Hiberus\Skeleton\Shared\Infrastructure\Bus\TransactionSymfonyMiddleware:
+            tags: [ 'hiberus.skeleton.command_handler_middleware' ]
+
+        Hiberus\Skeleton\Shared\Domain\Bus\Query\QueryHandler:
+            tags: [ 'hiberus.skeleton.query_handler' ]
+
+
+    Hiberus\Skeleton\App\Controller\:
+        resource: '../app/Controller'
+        tags: [ 'controller.service_arguments' ]
+
+    Hiberus\Skeleton\:
+        resource: '../src/'
+
+    Hiberus\Skeleton\Shared\Infrastructure\Symfony\ApiExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onException }
+
+    Hiberus\Skeleton\Shared\Infrastructure\Symfony\BasicHttpAuthMiddleware:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+    # RabbitMQ
+    Hiberus\Skeleton\Shared\Infrastructure\Bus\Event\RabbitMq\RabbitMqConnection:
+        arguments:
+            $exchangeName: '%env(RABBITMQ_EXCHANGE)%'
+            $maxMessages: '%env(default:defaultMaxMessages:RABBITMQ_MAX_MESSAGES)%'
+            $prefetchCount: '%env(default:defaultPrefetchCount:RABBITMQ_PREFETCH_COUNT)%'
+
+    PhpAmqpLib\Connection\AMQPSSLConnection:
+        arguments:
+            $host: '%env(RABBITMQ_HOST)%'
+            $port: '%env(RABBITMQ_PORT)%'
+            $user: '%env(RABBITMQ_USER)%'
+            $password: '%env(RABBITMQ_PASSWORD)%'
+            $vhost: '%env(RABBITMQ_VHOST)%'
+            $ssl_options:
+                - verify_peer: false
+    PhpAmqpLib\Connection\AbstractConnection: '@PhpAmqpLib\Connection\AMQPSSLConnection'
+
+    # Event Subscriber
+    Hiberus\Skeleton\Shared\Infrastructure\Bus\Event\InMemory\InMemorySymfonyEventBus:
+        arguments: [ !tagged hiberus.skeleton.domain_event_subscriber ]
+        lazy: true
+
+    Hiberus\Skeleton\Shared\Infrastructure\Bus\Event\DomainEventMapping:
+        arguments: [ !tagged hiberus.skeleton.domain_event_subscriber ]
+
+    Hiberus\Skeleton\Shared\Infrastructure\Bus\Event\DomainEventSubscriberLocator:
+        arguments: [ !tagged hiberus.skeleton.domain_event_subscriber ]
+
+    # Command/Query Handlers
+    Hiberus\Skeleton\Shared\Infrastructure\Bus\Command\InMemorySymfonyCommandBus:
+        arguments: [ !tagged hiberus.skeleton.command_handler ]
+
+    Hiberus\Skeleton\Shared\Infrastructure\Bus\Query\InMemorySymfonyQueryBus:
+        arguments: [ !tagged hiberus.skeleton.query_handler ]
+
+    Hiberus\Skeleton\App\Command\LaunchRabbitMqConsumerCommand:
+        arguments:
+            $consumerList: !tagged hiberus.skeleton.domain_event_subscriber
+        tags:
+            - { name: rabbit.command }
+
+    Hiberus\Skeleton\Tests\InitialDataFixtures:
+        tags:
+            - { name: dotrine.fixture.orm }

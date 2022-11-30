@@ -1,0 +1,26 @@
+###> symfony/framework-bundle ###
+/config/environments/.env.local
+/config/environments/.env.local.php
+/config/environments/.env.*.local
+/config/environments/.env
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> others ###
+/.ecs_cache
+.php_cs.cache
+###< others ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+/build/
+###< phpunit/phpunit ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###

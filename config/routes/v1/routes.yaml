@@ -1,0 +1,5 @@
+user_put:
+  path: /user/{id}
+  controller: Hiberus\Skeleton\App\Controller\Registration\UsersPutController
+  defaults: { auth: false }
+  methods: PUT
