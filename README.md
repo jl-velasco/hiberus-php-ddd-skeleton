@@ -64,7 +64,7 @@ curl --location --request PUT 'localhost:8001/v1/user/a95c0896-1d05-4785-95ec-a7
 #TODO: List files to delete for API type
 #### Delete the following unnecessary files if you want a Web type microservice:
 #TODO: List files to delete for Web type
-#### Other IMPORTANT Before using this skeleton you should
+#### IMPORTANT Before using this skeleton you should
 
 * Edit phpstan.neon package name
 * Edit composer.json and change:
@@ -101,7 +101,7 @@ This **ApiExceptionListener** listener is responsible for catching the exception
 
 ### Auth Middleware:
 
-Este middleware **BasicHttpAuthMiddleware** sirve authentificar las peticiones que se hacen al microservicio. Falta implementar AuthenticateUserCommand para comprobar el usuario y password. Se puede modificar para que maneje tokens.
+This middleware **BasicHttpAuthMiddleware** serves to authenticate the requests made to the microservice. It remains to implement AuthenticateUserCommand to check the username and password. It can be modified to handle tokens.
 
 ### Transaction Middleware:
 
@@ -127,11 +127,11 @@ them manually by doing:
 > composer auto-scripts
 
 ### Post Install CMD
-Those scripts in here will be executed after the `install` command has been
+This scripts in here will be executed after the `install` command has been
 executed with a lock file present.
 
 ### Post Update CMD
-Those scripts in here will be executed after the `update` command is executed or
+This scripts in here will be executed after the `update` command is executed or
 before the `install` command is executed without a lock file present
 
 ### PHP CS
