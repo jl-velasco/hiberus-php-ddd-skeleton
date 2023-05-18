@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Hiberus\Skeleton\Shared\Domain\ValueObject;
+namespace Hiberus\Skeleton\Ticket\Domain;
 
 use Hiberus\Skeleton\Shared\Domain\Exception\InvalidValueException;
+use Hiberus\Skeleton\Shared\Domain\ValueObject\StringValueObject;
 
-final class Name extends StringValueObject
+final class Description extends StringValueObject
 {
     /** @throws InvalidValueException */
     public function __construct(private readonly string $name)
@@ -21,10 +22,5 @@ final class Name extends StringValueObject
         if (empty($this->name)) {
             throw new InvalidValueException($this->name);
         }
-    }
-
-    public function isEquals(self $name): bool
-    {
-        return $this->value() === $name->value();
     }
 }

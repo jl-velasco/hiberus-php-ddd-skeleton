@@ -9,7 +9,6 @@ services:
     volumes:
       - ./:/var/www
       - ./var/log:/var/log
-      - ${GIT_SSH_CREDENTIALS_PATH}:/root/.ssh:ro
     ports:
       - "8001:80"
 

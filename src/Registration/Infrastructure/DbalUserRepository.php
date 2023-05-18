@@ -7,6 +7,7 @@ namespace Hiberus\Skeleton\Registration\Infrastructure;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Hiberus\Skeleton\Registration\Domain\User;
 use Hiberus\Skeleton\Registration\Domain\UserRepository;
 use Hiberus\Skeleton\Registration\Domain\Users;
@@ -20,6 +21,7 @@ use Hiberus\Skeleton\Shared\Domain\Exception\AlreadyStoredException;
 use Hiberus\Skeleton\Shared\Domain\Exception\InternalErrorException;
 use Hiberus\Skeleton\Shared\Domain\Exception\InvalidEmailAddressException;
 use Hiberus\Skeleton\Shared\Domain\Exception\InvalidValueException;
+use Hiberus\Skeleton\Shared\Domain\Exception\ResourceNotFoundException;
 use Hiberus\Skeleton\Shared\Domain\ValueObject\Date;
 use Hiberus\Skeleton\Shared\Domain\ValueObject\Uuid;
 use Hiberus\Skeleton\Shared\Infrastructure\Symfony\DbalCriteriaConverter;
@@ -35,25 +37,40 @@ class DbalUserRepository implements UserRepository
     ) {
     }
 
+    /**
+     * @throws InvalidValueException
+     * @throws Exception
+     * @throws ResourceNotFoundException
+     */
+    public function search(Uuid $userId): User
+    {
+        $queryBuilder = $this->getBuilderByCriteria(new Criteria(
+            new Filters(
+                [
+                    new Filter(
+                        new FilterField('id'),
+                        FilterOperator::EQUAL,
+                        new FilterValue($userId->value())
+                    )
+                ]
+            )
+        ));
+
+        $user = $queryBuilder->executeQuery()->fetchAssociative();
+
+        if (empty($user)) {
+            throw new ResourceNotFoundException(User::class, $userId->value());
+        }
+
+        return User::fromArray($user);
+    }
+
     /** @throws Exception|InvalidValueException */
     public function matching(Criteria $criteria): Users
     {
-        $queryBuilder = $this->dbalCriteriaConverter->convert(
-            self::TABLE_USER,
-            $criteria,
-            $this->connection->createQueryBuilder()
-        );
-
+        $queryBuilder = $this->getBuilderByCriteria($criteria);
         $result = $queryBuilder->executeQuery()->fetchAllAssociative();
-
-        return new Users(array_map(static function ($user) {
-            return User::fromPrimitives(
-                $user['id'],
-                $user['name'],
-                $user['email'],
-                $user['password']
-            );
-        }, $result));
+        return Users::fromArray($result);
     }
 
     /**
@@ -62,28 +79,10 @@ class DbalUserRepository implements UserRepository
      */
     public function save(User $user): void
     {
-        $fields = [
-            'id' => $user->id()->value(),
-        ];
-
-        $filterList = array_map(static function ($field, $value) {
-            return new Filter(
-                new FilterField($field),
-                FilterOperator::EQUAL,
-                new FilterValue($value)
-            );
-        }, array_keys($fields), $fields);
-
-        $criteria = new Criteria(
-            new Filters(
-                $filterList
-            )
-        );
-
-        $users = $this->matching($criteria);
-        if ($users->count() > 0) {
+        try{
+            $this->search($user->id());
             $this->update($user);
-        } else {
+        } catch (ResourceNotFoundException){
             $this->insert($user);
         }
     }
@@ -146,4 +145,14 @@ class DbalUserRepository implements UserRepository
             throw new InternalErrorException($e->getMessage(), $e);
         }
     }
+
+    private function getBuilderByCriteria(Criteria $criteria): QueryBuilder
+    {
+        return $this->dbalCriteriaConverter->convert(
+            self::TABLE_USER,
+            $criteria,
+            $this->connection->createQueryBuilder()
+        );
+    }
+
 }

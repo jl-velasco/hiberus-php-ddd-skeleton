@@ -1,6 +1,6 @@
 # General information
 
-This project is the base structure for a microservice, applying Domain-Driven Design (DDD) and Command Query Responsibility Segregation (CQRS).
+This project is the base structure for a microservice, applying Domain-Driven Design (DDD) and Command Query Responsibility Segregation (CQRS) with Event Sourcing (ES).
 It has the necessary files to act as api or as web. It uses PHP 8.1 and symfony 6.0 although it is decoupled from symfony.
 Use MySQL as the database and dbal, but an ORM can be changed if the team prefers.
 Once you have decided which type of microservice is going to be used, it is recommended that you delete the files related to each type.
@@ -49,6 +49,7 @@ exit $rc
 http://localhost:8001/
 ```
 ### Api version
+#### Example of DDD with CQRS with out Event Sourcing
 ```
 curl --location --request PUT 'localhost:8001/v1/user/a95c0896-1d05-4785-95ec-a7bc0229f356' \
 --header 'Content-Type: application/json' \
@@ -56,6 +57,17 @@ curl --location --request PUT 'localhost:8001/v1/user/a95c0896-1d05-4785-95ec-a7
     "name": "Jonh Doe",
     "email": "jonh@doe.com",
     "password": "jonhdoe"
+}'
+```
+#### Example of DDD with CQRS with Event Sourcing
+```
+curl --location --request PUT 'localhost:8001/v1/ticket/a95c0896-1d05-4785-95ec-a7bc0229f352' \
+--header 'Content-Type: application/json' \
+--data '{
+    "user_id": "bad30a5b-6f7a-472f-9400-9462d90f0a8f",
+    "comment_id": "2dd78746-a677-49eb-947b-5678261bc21f",
+    "comment_title": "Opening a new ticket",
+    "comment_description": "Help me please...",
 }'
 ```
 ## File to delete according to type of microservice:
@@ -84,9 +96,6 @@ curl --location --request PUT 'localhost:8001/v1/user/a95c0896-1d05-4785-95ec-a7
 ### Domain Events:
 
 Currently events are fired and consumed in memory **InMemorySymfonyEventBus**, but the project is also prepared to store and consume them with rabbitMQ **RabbitMqEventBus**.
-
-There is a parent domain event **StoreDomainEvent** that will store all the events that happen in the database (it doesn't matter the implementation: in memory, rabbitmq, etc).
-For it to work you have to execute a migration (file Version20220115081254_create_table_domain_event.php), if it is not needed, delete said migration and the class.
 
 ### Consumers:
 
@@ -192,9 +201,10 @@ docker-compose -f docker-compose-test.yml up -d --build
 ```
 
 # TODO:
+- [x] Add Event Sourcing (ES):
 - [x] Add Auth Middleware:
 - [x] Add Transaction Middleware
-- [x] Add DomainEventStorer
+- [x] ~~Add DomainEventStorer~~ (remove)
 - [x] Add Healthcheck
 - [x] Change Postgres to MySQL
 - [ ] Fix errors from cs-fixer, phpstan

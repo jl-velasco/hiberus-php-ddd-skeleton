@@ -24,4 +24,15 @@ final class Assert
             );
         }
     }
+
+    public static function subclassOf(string $value, string $className, string $message = null): bool
+    {
+        if (!\is_subclass_of($value, $className)) {
+            throw new InvalidArgumentException(
+                $message ?: sprintf('Class <%s> was expected to be subclass of <%s>.', \get_class((object) $value), $className)
+            );
+        }
+
+        return true;
+    }
 }

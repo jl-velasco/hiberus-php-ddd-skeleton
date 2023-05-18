@@ -2,21 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Hiberus\Skeleton\Registration\Domain;
+namespace Hiberus\Skeleton\Ticket\Domain\Events;
 
 use Hiberus\Skeleton\Shared\Domain\Bus\Event\DomainEvent;
 use Hiberus\Skeleton\Shared\Domain\Exception\InvalidValueException;
 
-final class UserCreatedDomainEvent extends DomainEvent
+final class TicketCreatedDomainEvent extends DomainEvent
 {
     public function __construct(
-        string $id,
-        private readonly string $name,
-        private readonly string $email,
+        string $aggregateId,
+        private readonly string $userId,
         string $eventId = null,
-        string $occurredOn = null
+        string $occurredOn = null,
     ) {
-        parent::__construct($id, $eventId, $occurredOn);
+        parent::__construct($aggregateId, $eventId, $occurredOn);
     }
 
     public static function eventName(): string
@@ -34,22 +33,20 @@ final class UserCreatedDomainEvent extends DomainEvent
         array $body,
         string $eventId,
         string $occurredOn
-    ): UserCreatedDomainEvent {
+    ): TicketCreatedDomainEvent {
         return new self(
             $aggregateId,
-            $body['name'],
-            $body['email'],
+            $body['user_id'],
             $eventId,
             $occurredOn
         );
     }
 
-    /** @return array<string, string> */
+    /** @return array<string, int|string> */
     public function toPrimitives(): array
     {
         return [
-            'name' => $this->name,
-            'email' => $this->email,
+            'user_id' => $this->userId,
         ];
     }
 }

@@ -7,6 +7,7 @@ namespace Hiberus\Skeleton\Shared\Domain;
 use ArrayIterator;
 use Countable;
 use Exception;
+use Hiberus\Skeleton\Shared\Domain\Bus\Event\EventSourcedEntity;
 use IteratorAggregate;
 use Traversable;
 
@@ -15,7 +16,7 @@ use Traversable;
  * @template TValue
  * @implements IteratorAggregate<TKey, TValue>
  */
-abstract class Collection implements Countable, IteratorAggregate
+abstract class Collection extends EventSourcedEntity implements Countable, IteratorAggregate
 {
     /** @param array<int, mixed> $items */
     public function __construct(private array $items = [])
@@ -82,6 +83,26 @@ abstract class Collection implements Countable, IteratorAggregate
             }
             $this->add($iterator);
         }
+    }
+
+    /**
+     * @param Collection<TKey, TValue> $collection
+     *
+     * @throws \Exception
+     */
+    public function diff(Collection $collection): static
+    {
+        return new static(array_udiff(
+            (array) $this->getIterator(),
+            (array) $collection->getIterator(),
+            static fn (mixed $a, mixed $b) => $a->id()->value() <=> $b->id()->value()
+        ));
+    }
+
+    /** @throws \Exception */
+    public function each(callable $callback): void
+    {
+        array_map($callback, (array) $this->getIterator());
     }
 
     abstract protected function type(): string;

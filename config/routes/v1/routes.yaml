@@ -1,5 +1,11 @@
 user_put:
   path: /user/{id}
-  controller: Hiberus\Skeleton\App\Controller\Registration\UsersPutController
+  controller: Hiberus\Skeleton\App\Controller\Registration\UserPutController
+  defaults: { auth: false }
+  methods: PUT
+
+ticket_put:
+  path: /ticket/{id}
+  controller: Hiberus\Skeleton\App\Controller\Ticket\TicketPutController
   defaults: { auth: false }
   methods: PUT

@@ -17,7 +17,8 @@ abstract class DomainEvent
     public function __construct(
         private readonly string $aggregateId,
         string $eventId = null,
-        string $occurredOn = null
+        string $occurredOn = null,
+        private int $playhead = -1,
     ) {
         $this->eventId = $eventId ?: Uuid::random()->value();
         $this->occurredOn = $occurredOn ?: (new Date())->stringDateTime();
@@ -49,5 +50,15 @@ abstract class DomainEvent
     public function occurredOn(): string
     {
         return $this->occurredOn;
+    }
+
+    public function playhead(): int
+    {
+        return $this->playhead;
+    }
+
+    public function setPlayhead(int $playhead): void
+    {
+        $this->playhead = $playhead;
     }
 }

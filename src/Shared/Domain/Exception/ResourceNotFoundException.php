@@ -12,8 +12,6 @@ class ResourceNotFoundException extends Exception
 
     public function __construct(string $objectType, string $searchValue)
     {
-        $message = sprintf(self::MESSAGE_TEMPLATE, $objectType, $searchValue);
-
-        parent::__construct($message);
+        parent::__construct(sprintf(self::MESSAGE_TEMPLATE, $objectType, $searchValue));
     }
 }

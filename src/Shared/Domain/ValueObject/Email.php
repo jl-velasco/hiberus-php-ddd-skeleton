@@ -15,6 +15,11 @@ final class Email extends StringValueObject
         $this->validate();
     }
 
+    public function isEquals(Email $other): bool
+    {
+        return $this->value === $other->value;
+    }
+
     /** @throws InvalidValueException */
     private function validate(): void
     {

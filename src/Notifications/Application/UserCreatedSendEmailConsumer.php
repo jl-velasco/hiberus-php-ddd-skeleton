@@ -8,7 +8,7 @@ use Hiberus\Skeleton\Notifications\Domain\Contact;
 use Hiberus\Skeleton\Notifications\Domain\Contacts;
 use Hiberus\Skeleton\Notifications\Domain\MailGateway;
 use Hiberus\Skeleton\Notifications\Domain\MailTemplate;
-use Hiberus\Skeleton\Registration\Domain\UserCreatedDomainEvent;
+use Hiberus\Skeleton\Registration\Domain\Events\UserCreatedDomainEvent;
 use Hiberus\Skeleton\Shared\Domain\Bus\Event\DomainEvent;
 use Hiberus\Skeleton\Shared\Domain\Bus\Event\DomainEventSubscriber;
 use Hiberus\Skeleton\Shared\Domain\Exception\InvalidValueException;

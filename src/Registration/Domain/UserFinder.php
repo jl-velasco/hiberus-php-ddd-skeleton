@@ -23,27 +23,6 @@ final class UserFinder
     /** @throws ResourceNotFoundException */
     public function __invoke(Uuid $id): User
     {
-        $users = $this->repository->matching($this->criteria($id));
-
-        if ($users->count() === 0) {
-            throw new ResourceNotFoundException(User::class, $id->value());
-        }
-
-        return $users->first();
-    }
-
-    private function criteria(Uuid $id): Criteria
-    {
-        return new Criteria(
-            new Filters(
-                [
-                    new Filter(
-                        new FilterField('id'),
-                        FilterOperator::EQUAL,
-                        new FilterValue($id->value())
-                    )
-                ]
-            )
-        );
+        return $this->repository->search($id);
     }
 }
