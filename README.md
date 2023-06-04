@@ -49,7 +49,7 @@ exit $rc
 http://localhost:8001/
 ```
 ### Api version
-#### Example of DDD with CQRS with out Event Sourcing
+#### Example of DDD with CQRS but with out Event Sourcing
 ```
 curl --location --request PUT 'localhost:8001/v1/user/a95c0896-1d05-4785-95ec-a7bc0229f356' \
 --header 'Content-Type: application/json' \
@@ -59,7 +59,7 @@ curl --location --request PUT 'localhost:8001/v1/user/a95c0896-1d05-4785-95ec-a7
     "password": "jonhdoe"
 }'
 ```
-#### Example of DDD with CQRS with Event Sourcing
+#### Example of DDD with CQRS and Event Sourcing
 ```
 curl --location --request PUT 'localhost:8001/v1/ticket/a95c0896-1d05-4785-95ec-a7bc0229f352' \
 --header 'Content-Type: application/json' \

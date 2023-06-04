@@ -3,10 +3,13 @@ declare(strict_types = 1);
 
 namespace Hiberus\Skeleton\Ticket\Domain;
 
+use Hiberus\Skeleton\Shared\Domain\Bus\Event\EventSourcedEntity;
+use Hiberus\Skeleton\Shared\Domain\Exception\InvalidValueException;
 use Hiberus\Skeleton\Shared\Domain\ValueObject\Date;
 use Hiberus\Skeleton\Shared\Domain\ValueObject\Uuid;
+use Hiberus\Skeleton\Ticket\Domain\Events\TicketCommentCreatedDomainEvent;
 
-class Comment
+class Comment extends EventSourcedEntity
 {
     public function __construct(
         private readonly Uuid $id,

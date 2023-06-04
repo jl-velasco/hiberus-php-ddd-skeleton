@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Hiberus\Skeleton\Registration\Application\Upsert;
 
 use Hiberus\Skeleton\Registration\Application\Find\UserFinder;
-use Hiberus\Skeleton\Registration\Application\Update\UserEmailUpdater;
 use Hiberus\Skeleton\Registration\Domain\UserRepository;
 use Hiberus\Skeleton\Shared\Domain\Bus\Event\EventBus;
 use Hiberus\Skeleton\Shared\Domain\Exception\ResourceNotFoundException;

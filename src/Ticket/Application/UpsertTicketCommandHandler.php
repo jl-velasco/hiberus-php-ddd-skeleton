@@ -30,18 +30,26 @@ final class UpsertTicketCommandHandler implements CommandHandler
         $commentId = new Uuid($command->commentId());
         $commentTitle = new Title($command->commentTitle());
         $commentDescription = new Description($command->commentDescription());
-        $comment = new Comment(
-            $commentId,
-            $userId,
-            $commentTitle,
-            $commentDescription,
-        );
+
         $status = $command->status() !== null ? Status::tryFrom((int) $command->status()) : null;
 
         try {
-            $this->updater->__invoke($id, $comment, $status);
+            $this->updater->__invoke(
+                $id,
+                $userId,
+                $commentId,
+                $commentTitle,
+                $commentDescription,
+                $status
+            );
         } catch (ResourceNotFoundException) {
-            $this->creator->create($id, $userId, $comment);
+            $this->creator->create(
+                $id,
+                $userId,
+                $commentId,
+                $commentTitle,
+                $commentDescription,
+            );
         }
     }
 }

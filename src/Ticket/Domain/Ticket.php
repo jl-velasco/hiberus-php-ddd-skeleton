@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Hiberus\Skeleton\Ticket\Domain;
 
@@ -8,7 +8,6 @@ use Hiberus\Skeleton\Shared\Domain\Exception\AlreadyStoredException;
 use Hiberus\Skeleton\Shared\Domain\Exception\InvalidValueException;
 use Hiberus\Skeleton\Shared\Domain\ValueObject\Date;
 use Hiberus\Skeleton\Shared\Domain\ValueObject\Uuid;
-use Hiberus\Skeleton\Ticket\Domain\Events\TicketCommentCreatedDomainEvent;
 use Hiberus\Skeleton\Ticket\Domain\Events\TicketCreatedDomainEvent;
 use Hiberus\Skeleton\Ticket\Domain\Events\TicketStatusChangedDomainEvent;
 
@@ -54,7 +53,13 @@ class Ticket extends AggregateRoot
      * @throws InvalidValueException
      * @throws AlreadyStoredException
      */
-    public static function create(Uuid $id, Uuid $userId, Comment $comment): self
+    public static function create(
+        Uuid        $id,
+        Uuid        $userId,
+        Uuid        $commentId,
+        Title       $commentTitle,
+        Description $commentDescription
+    ): self
     {
         $ticket = new self();
 
@@ -65,7 +70,12 @@ class Ticket extends AggregateRoot
             )
         );
 
-        $ticket->createComment($comment);
+        $ticket->createComment(
+            $userId,
+            $commentId,
+            $commentTitle,
+            $commentDescription
+        );
 
         return $ticket;
     }
@@ -74,9 +84,22 @@ class Ticket extends AggregateRoot
      * @throws InvalidValueException
      * @throws AlreadyStoredException
      */
-    public function createComment(Comment $comment): void
+    public function createComment(
+        Uuid        $userId,
+        Uuid        $commentId,
+        Title       $commentTitle,
+        Description $commentDescription
+    ): void
     {
-        $this->comments->create($this->id(), $comment);
+        $this->comments->create(
+            $this->id(),
+            new Comment(
+                $commentId,
+                $userId,
+                $commentTitle,
+                $commentDescription
+            )
+        );
     }
 
     /**
@@ -103,7 +126,7 @@ class Ticket extends AggregateRoot
     {
         $data = $event->toPrimitives();
         $this->id = new Uuid($event->aggregateId());
-        $this->userId = new Uuid($data['user_id']);
+        $this->userId = new Uuid((string)$data['user_id']);
         $this->status = Status::OPEN;
         $this->comments = new Comments([]);
         $this->createdAt = new Date($event->occurredOn());

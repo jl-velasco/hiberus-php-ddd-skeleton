@@ -20,7 +20,10 @@ class Comments extends Collection
     }
 
     /** @throws InvalidValueException|AlreadyStoredException */
-    public function create(Uuid $aggregataId, Comment $comment): void
+    public function create(
+        Uuid $aggregataId,
+        Comment $comment
+    ): void
     {
         foreach ($this->getIterator() as $item) {
             if ($item->id()->value() === $comment->id()->value()) {
@@ -43,6 +46,7 @@ class Comments extends Collection
     public function applyTicketCommentCreatedDomainEvent(TicketCommentCreatedDomainEvent $event): void
     {
         $data = $event->toPrimitives();
+
         $this->add(
             new Comment(
                 new Uuid($data['id']),
